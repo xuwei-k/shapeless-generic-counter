@@ -1,0 +1,40 @@
+val common = Def.settings(
+  libraryDependencies += "io.circe" %% "circe-generic" % "0.14.12",
+)
+
+val a1 = project.settings(
+  common,
+  scalaVersion := "2.13.16",
+)
+
+val a2 = project.settings(
+  common,
+  scalaVersion := "2.12.20",
+)
+
+val a3 = project.settings(
+  scalaVersion := "3.3.5"
+)
+
+val a4 = project
+  .settings(
+    common,
+    scalaVersion := "2.13.16"
+  )
+  .disablePlugins(SbtShapelessGenericCounter)
+
+val root = project
+  .in(file("."))
+  .settings(
+    TaskKey[Unit]("check") := {
+      val result: String = IO.read(target.value / "shapeless-generic-count-aggregate.txt")
+      val expect: String = IO.read(file("expect.txt"))
+      assert(result == expect, s"${result} != ${expect}")
+    }
+  )
+  .aggregate(
+    a1,
+    a2,
+    a3,
+    a4,
+  )

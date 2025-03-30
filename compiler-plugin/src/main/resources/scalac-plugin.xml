@@ -1,0 +1,4 @@
+<plugin>
+  <name>shapeless-generic-counter</name>
+  <classname>shapeless_generic_counter.ShapelessGenericCounter</classname>
+</plugin>

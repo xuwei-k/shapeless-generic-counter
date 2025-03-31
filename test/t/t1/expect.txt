@@ -1,4 +1,0 @@
-example.A2 3
-example.A1 2
-example.A4 1
-example.A3 1

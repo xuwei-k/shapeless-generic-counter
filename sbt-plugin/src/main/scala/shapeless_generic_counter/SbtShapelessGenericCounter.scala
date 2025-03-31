@@ -3,6 +3,8 @@ package shapeless_generic_counter
 import sbt.Keys.*
 import sbt.{*, given}
 import scala.collection.compat.*
+import sjsonnew.BasicJsonProtocol.*
+import sjsonnew.JsonFormat
 
 object SbtShapelessGenericCounter extends AutoPlugin {
   object autoImport {
@@ -14,7 +16,7 @@ object SbtShapelessGenericCounter extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
 
-  private type ResultValue = List[(String, Int)]
+  private type ResultValue = List[Values]
 
   private def defaultConfigurations = Seq(Compile, Test)
 
@@ -26,10 +28,25 @@ object SbtShapelessGenericCounter extends AutoPlugin {
     def unapply(v: String): Boolean = Set("2.12", "2.13").contains(v)
   }
 
+  private implicit val instance: JsonFormat[Values] = {
+    import sjsonnew.BasicJsonProtocol.*
+
+    implicit val result: JsonFormat[shapeless_generic_counter.Result] =
+      caseClass2(shapeless_generic_counter.Result.apply, shapeless_generic_counter.Result.unapply)(
+        "name",
+        "count",
+      )
+
+    caseClass2(Values.apply, Values.unapply)(
+      "type",
+      "values",
+    )
+  }
+
   override def buildSettings: Seq[Def.Setting[?]] = Def.settings(
     shapelessGenericCounterAggregateConfigurations := defaultConfigurations,
     LocalRootProject / shapelessGenericCounterAggregate / shapelessGenericCounterOutput := {
-      (LocalRootProject / target).value / "shapeless-generic-count-aggregate.txt"
+      (LocalRootProject / target).value / "shapeless-generic-count-aggregate.json"
     },
     LocalRootProject / shapelessGenericCounterAggregate := {
       val extracted = Project.extract(state.value)
@@ -48,25 +65,31 @@ object SbtShapelessGenericCounter extends AutoPlugin {
           }
           .filter(_.isFile)
           .flatMap { f =>
-            IO.readLines(f)
-              .iterator
-              .map(_.trim)
-              .filter(_.nonEmpty)
-              .map(_.split(' '))
-              .map { case Array(a, AsInt(b)) =>
-                a -> b
-              }
-              .toList
+            val json = sjsonnew.support.scalajson.unsafe.Parser.parseFromFile(f).get
+            sjsonnew.support.scalajson.unsafe.Converter.fromJsonUnsafe[ResultValue](json)
           }
-          .groupBy(_._1)
-          .map { case (k, v) => k -> v.map(_._2).sum }
+          .groupBy(_.`type`)
+          .map { case (k, v) =>
+            Values(
+              k,
+              v.flatMap(_.values)
+                .groupBy(_.name)
+                .map { case (x, y) =>
+                  shapeless_generic_counter.Result(x, y.map(_.count).sum)
+                }
+                .toList
+                .sortBy(x => (x.count, x.name))
+                .reverse
+            )
+          }
           .toList
-          .sortBy(_.swap)
+          .sortBy(_.`type`)
           .reverse
 
       val f = (LocalRootProject / shapelessGenericCounterAggregate / shapelessGenericCounterOutput).value
-
-      IO.writeLines(f, result.map { case (a, b) => s"$a $b" })
+      val json = sjsonnew.support.scalajson.unsafe.Converter.toJsonUnsafe(result)
+      val jsonString = sjsonnew.support.scalajson.unsafe.PrettyPrinter(json)
+      IO.write(f, jsonString)
       result
     }
   )
@@ -74,7 +97,7 @@ object SbtShapelessGenericCounter extends AutoPlugin {
   def shapelessGenericCounterSetting(c: Configuration): SettingsDefinition =
     Def.settings(
       c / shapelessGenericCounterOutput := {
-        crossTarget.value / s"shapeless-generic-count-${Defaults.nameForSrc(c.name)}.txt"
+        crossTarget.value / s"shapeless-generic-count-${Defaults.nameForSrc(c.name)}.json"
       },
       c / compile / scalacOptions ++= PartialFunction
         .condOpt(scalaBinaryVersion.value) { case EnableScalaBinaryVersion() =>

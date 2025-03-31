@@ -72,6 +72,15 @@ commonSettings
 
 publish / skip := true
 
+lazy val core = projectMatrix
+  .in(file("core"))
+  .defaultAxes()
+  .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.16", "3.3.5"))
+  .settings(
+    commonSettings,
+    name := "shapeless-generic-counter-core",
+  )
+
 lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
@@ -109,6 +118,9 @@ lazy val sbtPlugin = projectMatrix
     scriptedBufferLog := false,
     name := "sbt-shapeless-generic-counter",
   )
+  .dependsOn(core)
+
+val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.11"
 
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))
@@ -116,10 +128,42 @@ lazy val compilerPlugin = projectMatrix
   .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.16"))
   .settings(
     commonSettings,
+    libraryDependencies += argonaut,
+    assembly / assemblyShadeRules := Seq(
+      ShadeRule.rename("argonaut.**" -> s"shapeless_generic_counter.internal.@0").inAll
+    ),
+    assembly / assemblyExcludedJars := {
+      val toInclude = Seq(
+        "argonaut",
+      )
+
+      (assembly / fullClasspath).value.filterNot { c => toInclude.exists(prefix => c.data.getName.startsWith(prefix)) }
+    },
+    Compile / packageBin / artifact := (Compile / assembly / artifact).value,
+    addArtifact(Compile / packageBin / artifact, assembly),
+    pomPostProcess := { node =>
+      import scala.xml.Elem
+      import scala.xml.Node
+      import scala.xml.NodeSeq
+      import scala.xml.transform.RuleTransformer
+      import scala.xml.transform.RewriteRule
+      new RuleTransformer(new RewriteRule {
+        override def transform(node: Node) =
+          node match {
+            case e: Elem
+                if e.label == "dependency" && e.child
+                  .exists(child => child.label == "groupId" && (child.text == argonaut.organization)) =>
+              NodeSeq.fromSeq(Nil)
+            case _ =>
+              node
+          }
+      }).transform(node).head
+    },
     libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value,
     name := "shapeless-generic-counter",
     description := "count shapeless.Generic deriving",
   )
+  .dependsOn(core)
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.6.4"
 ThisBuild / semanticdbEnabled := true

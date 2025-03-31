@@ -1,0 +1,16 @@
+[{
+  "type": "shapeless.Generic",
+  "values": [{
+    "name": "example.A2",
+    "count": 3
+  }, {
+    "name": "example.A1",
+    "count": 2
+  }, {
+    "name": "example.A4",
+    "count": 1
+  }, {
+    "name": "example.A3",
+    "count": 1
+  }]
+}]

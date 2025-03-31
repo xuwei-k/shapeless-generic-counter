@@ -27,8 +27,8 @@ val root = project
   .in(file("."))
   .settings(
     TaskKey[Unit]("check") := {
-      val result: String = IO.read(target.value / "shapeless-generic-count-aggregate.txt")
-      val expect: String = IO.read(file("expect.txt"))
+      val result: String = IO.read(target.value / "shapeless-generic-count-aggregate.json")
+      val expect: String = IO.read(file("expect.json"))
       assert(result == expect, s"${result} != ${expect}")
     }
   )

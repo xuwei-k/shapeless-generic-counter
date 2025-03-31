@@ -1,5 +1,6 @@
 package shapeless_generic_counter
 
+import argonaut.EncodeJson
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -11,7 +12,17 @@ import scala.tools.nsc.plugins.OutputFileWriter
 import scala.tools.nsc.plugins.Plugin
 import scala.tools.nsc.plugins.PluginComponent
 
+object ShapelessGenericCounter {
+  private implicit val resultInstance: EncodeJson[Result] =
+    EncodeJson.jencode2L(Result.unapply(_: Result).get)("name", "count")
+
+  private implicit val valuesInstance: EncodeJson[Values] =
+    EncodeJson.jencode2L(Values.unapply(_: Values).get)("type", "values")
+}
+
 class ShapelessGenericCounter(override val global: Global) extends Plugin {
+  import ShapelessGenericCounter.*
+
   override val name = "shapeless-generic-counter"
   override val description = "count shapeless.Generic.instance call"
 
@@ -35,14 +46,21 @@ class ShapelessGenericCounter(override val global: Global) extends Plugin {
   }
 
   override def writeAdditionalOutputs(writer: OutputFileWriter): Unit = {
-    val result = counter.iterator.map { case (k, v) => k -> v.sum() }.toList
-      .sortBy(_.swap)
-      .reverseIterator
-      .map { case (k, v) => s"$k $v" }
-      .mkString("", "\n", "\n")
+    val result1 = Values(
+      `type` = "shapeless.Generic",
+      values =
+        counter.iterator.map { case (k, v) => Result(name = k, count = v.sum()) }.toList.sortBy(x => (x.count, x.name))
+    )
     Files.write(
       new File(outputFile).toPath,
-      result.getBytes(StandardCharsets.UTF_8)
+      implicitly[EncodeJson[List[Values]]]
+        .encode(
+          List(
+            result1,
+          )
+        )
+        .toString
+        .getBytes(StandardCharsets.UTF_8)
     )
   }
 

@@ -26,7 +26,7 @@ class ShapelessGenericCounter(override val global: Global) extends Plugin {
   override val name = "shapeless-generic-counter"
   override val description = "count shapeless.Generic.instance call"
 
-  private val counter: TrieMap[String, LongAdder] = TrieMap.empty
+  private val counter = Counter.create()
 
   private var outputFile: String = ""
 
@@ -45,22 +45,25 @@ class ShapelessGenericCounter(override val global: Global) extends Plugin {
     }
   }
 
+  private def asResult(counter: TrieMap[String, LongAdder]): List[Result] =
+    counter.iterator.map { case (k, v) => Result(name = k, count = v.sum()) }.toList.sortBy(x => (x.count, x.name))
+
   override def writeAdditionalOutputs(writer: OutputFileWriter): Unit = {
-    val result1 = Values(
-      `type` = "shapeless.Generic",
-      values =
-        counter.iterator.map { case (k, v) => Result(name = k, count = v.sum()) }.toList.sortBy(x => (x.count, x.name))
+    val result = implicitly[EncodeJson[List[Values]]].encode(
+      List(
+        Values(
+          `type` = "shapeless.Generic",
+          values = asResult(counter.generic)
+        ),
+        Values(
+          `type` = "shapeless.LabelledGeneric",
+          values = asResult(counter.labelled)
+        ),
+      )
     )
     Files.write(
       new File(outputFile).toPath,
-      implicitly[EncodeJson[List[Values]]]
-        .encode(
-          List(
-            result1,
-          )
-        )
-        .toString
-        .getBytes(StandardCharsets.UTF_8)
+      result.toString.getBytes(StandardCharsets.UTF_8)
     )
   }
 
@@ -69,8 +72,7 @@ class ShapelessGenericCounter(override val global: Global) extends Plugin {
   )
 }
 
-class ShapelessGenericCounterTraverser(override val global: Global, counter: TrieMap[String, LongAdder])
-    extends PluginComponent {
+class ShapelessGenericCounterTraverser(override val global: Global, counter: Counter) extends PluginComponent {
   import global.*
 
   override val runsAfter: List[String] = List("typer")
@@ -82,7 +84,10 @@ class ShapelessGenericCounterTraverser(override val global: Global, counter: Tri
       tree match {
         case TypeApply(Select(g: Ident, TermName("instance")), List(t, _))
             if g.tpe.typeSymbol.fullName == "shapeless.Generic" =>
-          counter.getOrElseUpdate(t.tpe.typeSymbol.fullName, new LongAdder()).increment()
+          counter.generic.getOrElseUpdate(t.tpe.typeSymbol.fullName, new LongAdder()).increment()
+        case TypeApply(Select(g, TermName("materializeProduct" | "materializeCoproduct")), List(t, _, _, _))
+            if g.tpe.typeSymbol.fullName == "shapeless.LabelledGeneric" =>
+          counter.labelled.getOrElseUpdate(t.tpe.typeSymbol.fullName, new LongAdder()).increment()
         case _ =>
       }
       super.traverse(tree)

@@ -1,4 +1,13 @@
 [{
+  "type": "shapeless.LabelledGeneric",
+  "values": [{
+    "name": "example.A2",
+    "count": 2
+  }, {
+    "name": "example.A1",
+    "count": 2
+  }]
+}, {
   "type": "shapeless.Generic",
   "values": [{
     "name": "example.A2",

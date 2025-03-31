@@ -118,7 +118,7 @@ lazy val compilerPlugin = projectMatrix
     commonSettings,
     libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value,
     name := "shapeless-generic-counter",
-    description := "count shapeless.Generic deriving count",
+    description := "count shapeless.Generic deriving",
   )
 
 ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.6.4"

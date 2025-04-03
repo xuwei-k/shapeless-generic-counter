@@ -16,4 +16,4 @@ sbt shell
 > shapelessGenericCounterAggregate
 ```
 
-and then open `target/shapeless-generic-count-aggregate.txt`
+and then open `target/shapeless-generic-count-aggregate.json`

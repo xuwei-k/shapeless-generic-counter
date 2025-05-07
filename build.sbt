@@ -75,7 +75,7 @@ publish / skip := true
 lazy val core = projectMatrix
   .in(file("core"))
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.16", "3.3.5"))
+  .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.16", "3.3.6"))
   .settings(
     commonSettings,
     name := "shapeless-generic-counter-core",

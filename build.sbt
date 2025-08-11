@@ -95,7 +95,7 @@ lazy val sbtPlugin = projectMatrix
         case "2.12" =>
           (pluginCrossBuild / sbtVersion).value
         case _ =>
-          "2.0.0-M5"
+          "2.0.0-RC2"
       }
     },
     Compile / sourceGenerators += task {

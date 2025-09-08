@@ -85,7 +85,7 @@ lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.20", "3.7.2"))
+  .jvmPlatform(scalaVersions = Seq("2.12.20", "3.7.3"))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",

@@ -4,7 +4,7 @@ val common = Def.settings(
 
 val a1 = project.settings(
   common,
-  scalaVersion := "2.13.16",
+  scalaVersion := "2.13.17",
 )
 
 val a2 = project.settings(
@@ -19,7 +19,7 @@ val a3 = project.settings(
 val a4 = project
   .settings(
     common,
-    scalaVersion := "2.13.16"
+    scalaVersion := "2.13.17"
   )
   .disablePlugins(SbtShapelessGenericCounter)
 

@@ -13,7 +13,7 @@ val a2 = project.settings(
 )
 
 val a3 = project.settings(
-  scalaVersion := "3.3.6"
+  scalaVersion := "3.3.7"
 )
 
 val a4 = project

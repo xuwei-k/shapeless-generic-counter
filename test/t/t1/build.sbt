@@ -9,7 +9,7 @@ val a1 = project.settings(
 
 val a2 = project.settings(
   common,
-  scalaVersion := "2.12.20",
+  scalaVersion := "2.12.21",
 )
 
 val a3 = project.settings(

@@ -75,7 +75,7 @@ publish / skip := true
 lazy val core = projectMatrix
   .in(file("core"))
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.18", "3.3.7"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18", "3.3.7"))
   .settings(
     commonSettings,
     name := "shapeless-generic-counter-core",
@@ -85,7 +85,7 @@ lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.20", "3.7.4"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.7.4"))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",
@@ -125,7 +125,7 @@ val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.11"
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.20", "2.13.18"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18"))
   .settings(
     commonSettings,
     libraryDependencies += argonaut,

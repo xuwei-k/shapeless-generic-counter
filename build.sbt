@@ -75,7 +75,7 @@ publish / skip := true
 lazy val core = projectMatrix
   .in(file("core"))
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18", "3.3.7"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.1", "3.3.7"))
   .settings(
     commonSettings,
     name := "shapeless-generic-counter-core",
@@ -125,7 +125,7 @@ val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.11"
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.1"))
   .settings(
     commonSettings,
     libraryDependencies += argonaut,

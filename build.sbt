@@ -23,6 +23,14 @@ val commonSettings = Def.settings(
     scalaBinaryVersion.value match {
       case "3" =>
         Nil
+      case _ =>
+        Seq("-release:8")
+    }
+  },
+  scalacOptions ++= {
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
       case "2.13" =>
         Seq("-Xsource:3-cross")
       case "2.12" =>
@@ -85,7 +93,7 @@ lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.7.4"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.1"))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",
@@ -95,7 +103,7 @@ lazy val sbtPlugin = projectMatrix
         case "2.12" =>
           (pluginCrossBuild / sbtVersion).value
         case _ =>
-          "2.0.0-RC8"
+          "2.0.0-RC9"
       }
     },
     Compile / sourceGenerators += task {

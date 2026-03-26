@@ -93,7 +93,7 @@ lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.1"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.2"))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",
@@ -103,7 +103,7 @@ lazy val sbtPlugin = projectMatrix
         case "2.12" =>
           (pluginCrossBuild / sbtVersion).value
         case _ =>
-          "2.0.0-RC9"
+          "2.0.0-RC10"
       }
     },
     Compile / sourceGenerators += task {

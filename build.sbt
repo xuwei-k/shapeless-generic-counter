@@ -1,5 +1,7 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
+def sbt2 = "2.0.0-RC11"
+
 val commonSettings = Def.settings(
   publishTo := sonatypePublishToBundle.value,
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
@@ -93,7 +95,7 @@ lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .defaultAxes()
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "3.8.2"))
+  .jvmPlatform(scalaVersions = Seq("2.12.21", scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",
@@ -103,7 +105,7 @@ lazy val sbtPlugin = projectMatrix
         case "2.12" =>
           (pluginCrossBuild / sbtVersion).value
         case _ =>
-          "2.0.0-RC11"
+          sbt2
       }
     },
     Compile / sourceGenerators += task {

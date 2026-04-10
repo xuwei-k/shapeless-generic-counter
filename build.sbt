@@ -128,7 +128,7 @@ lazy val sbtPlugin = projectMatrix
   )
   .dependsOn(core)
 
-val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.11"
+val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.12"
 
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))

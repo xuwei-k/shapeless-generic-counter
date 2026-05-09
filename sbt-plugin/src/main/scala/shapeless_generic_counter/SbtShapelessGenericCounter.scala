@@ -32,12 +32,12 @@ object SbtShapelessGenericCounter extends AutoPlugin {
     import sjsonnew.BasicJsonProtocol.*
 
     implicit val result: JsonFormat[shapeless_generic_counter.Result] =
-      caseClass2(shapeless_generic_counter.Result.apply, shapeless_generic_counter.Result.unapply)(
+      caseClass2(shapeless_generic_counter.Result.apply, (_: shapeless_generic_counter.Result).asTupleOption)(
         "name",
         "count",
       )
 
-    caseClass2(Values.apply, Values.unapply)(
+    caseClass2(Values.apply, (_: Values).asTupleOption)(
       "type",
       "values",
     )

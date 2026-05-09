@@ -83,17 +83,24 @@ commonSettings
 
 publish / skip := true
 
+def Scala212 = "2.12.21"
+def Scala213 = "2.13.18"
+def Scala3 = "3.3.7"
+
 lazy val core = projectMatrix
   .in(file("core"))
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18", "3.3.7"))
+  .jvmPlatform(scalaVersions = Seq(Scala212, Scala213, Scala3))
   .settings(
     commonSettings,
     name := "shapeless-generic-counter-core",
   )
 
+def sbtPluginId = "sbtPlugin"
+
 lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
+  .withId(sbtPluginId)
   .enablePlugins(SbtPlugin)
   .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(scalaVersions = Seq("2.12.21", scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)))
@@ -129,7 +136,16 @@ lazy val sbtPlugin = projectMatrix
     scriptedBufferLog := false,
     name := "sbt-shapeless-generic-counter",
   )
-  .dependsOn(core)
+  .configure(p =>
+    p.dependsOn(
+      p.id.drop(sbtPluginId.length) match {
+        case "2_12" =>
+          core.jvm(Scala212)
+        case "3" =>
+          core.jvm(Scala3)
+      }
+    )
+  )
 
 val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.12"
 

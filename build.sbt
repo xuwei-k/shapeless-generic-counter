@@ -11,7 +11,11 @@ val commonSettings = Def.settings(
   Compile / doc / scalacOptions ++= {
     val hash = sys.process.Process("git rev-parse HEAD").lineStream_!.head
     if (scalaBinaryVersion.value == "3") {
-      Nil // TODO
+      Seq(
+        "-source-links:github://xuwei-k/shapeless-generic-counter",
+        "-revision",
+        hash
+      )
     } else {
       Seq(
         "-sourcepath",

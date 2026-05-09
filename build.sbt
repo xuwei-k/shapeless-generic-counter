@@ -103,7 +103,7 @@ lazy val sbtPlugin = projectMatrix
   .withId(sbtPluginId)
   .enablePlugins(SbtPlugin)
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(scalaVersions = Seq("2.12.21", scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)))
+  .jvmPlatform(scalaVersions = Seq(Scala212, scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)))
   .settings(
     commonSettings,
     description := "count shapeless.Generic instance",
@@ -152,7 +152,7 @@ val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.12"
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18"))
+  .jvmPlatform(scalaVersions = Seq(Scala212, Scala213))
   .settings(
     commonSettings,
     exportJars := false,

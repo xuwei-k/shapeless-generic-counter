@@ -85,7 +85,7 @@ publish / skip := true
 
 lazy val core = projectMatrix
   .in(file("core"))
-  .defaultAxes()
+  .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18", "3.3.7"))
   .settings(
     commonSettings,
@@ -95,7 +95,7 @@ lazy val core = projectMatrix
 lazy val sbtPlugin = projectMatrix
   .in(file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
-  .defaultAxes()
+  .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(scalaVersions = Seq("2.12.21", scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)))
   .settings(
     commonSettings,
@@ -135,7 +135,7 @@ val argonaut = "io.github.argonaut-io" %% "argonaut" % "6.3.12"
 
 lazy val compilerPlugin = projectMatrix
   .in(file("compiler-plugin"))
-  .defaultAxes()
+  .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18"))
   .settings(
     commonSettings,

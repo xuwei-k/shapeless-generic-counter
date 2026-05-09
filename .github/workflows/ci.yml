@@ -25,5 +25,5 @@ jobs:
            "scalafixAll --check"
            test
            publishLocal
-           sbtPluginJVM2_12/scripted
-           sbtPluginJVM3/scripted
+           sbtPlugin2_12/scripted
+           sbtPlugin3/scripted

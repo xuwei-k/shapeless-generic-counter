@@ -1,5 +1,6 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
+def sbt1 = "1.12.12"
 def sbt2 = "2.0.0"
 
 val commonSettings = Def.settings(
@@ -7,7 +8,7 @@ val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value),
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / doc / scalacOptions ++= {
-    val hash = sys.process.Process("git rev-parse HEAD").lineStream_!.head
+    val hash = sys.process.Process("git rev-parse HEAD").lazyLines_!.head
     if (scalaBinaryVersion.value == "3") {
       Seq(
         "-source-links:github://xuwei-k/shapeless-generic-counter",
@@ -64,27 +65,27 @@ val commonSettings = Def.settings(
   ),
 )
 
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  releaseStepCommandAndRemaining("set useSuperShell := false"),
-  releaseStepCommandAndRemaining("publishSigned"),
-  releaseStepCommandAndRemaining("sonaRelease"),
-  releaseStepCommandAndRemaining("set useSuperShell := true"),
-  setNextVersion,
-  commitNextVersion,
-  pushChanges
+val root = rootProject.autoAggregate.settings(
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    releaseStepCommandAndRemaining("set useSuperShell := false"),
+    releaseStepCommandAndRemaining("publishSigned"),
+    releaseStepCommandAndRemaining("sonaRelease"),
+    releaseStepCommandAndRemaining("set useSuperShell := true"),
+    setNextVersion,
+    commitNextVersion,
+    pushChanges
+  ),
+  commonSettings,
+  publish / skip := true
 )
 
-commonSettings
-
-publish / skip := true
-
-def Scala212 = "2.12.21"
+def Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1)
 def Scala213 = "2.13.18"
 def Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)
 
@@ -109,7 +110,7 @@ lazy val sbtPlugin = projectMatrix
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
         case "2.12" =>
-          (pluginCrossBuild / sbtVersion).value
+          sbt1
         case _ =>
           sbt2
       }
@@ -153,7 +154,9 @@ lazy val compilerPlugin = projectMatrix
         "argonaut",
       )
 
-      (assembly / fullClasspath).value.filterNot { c => toInclude.exists(prefix => c.data.getName.startsWith(prefix)) }
+      (assembly / fullClasspath).value.filterNot { c =>
+        toInclude.exists(prefix => fileConverter.value.toPath(c.data).toFile.getName.startsWith(prefix))
+      }
     },
     Compile / packageBin / artifact := (Compile / assembly / artifact).value,
     addArtifact(Compile / packageBin / artifact, assembly),

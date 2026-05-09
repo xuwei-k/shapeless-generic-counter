@@ -155,6 +155,7 @@ lazy val compilerPlugin = projectMatrix
   .jvmPlatform(scalaVersions = Seq("2.12.21", "2.13.18"))
   .settings(
     commonSettings,
+    exportJars := false,
     libraryDependencies += argonaut,
     assembly / assemblyShadeRules := Seq(
       ShadeRule.rename("argonaut.**" -> s"shapeless_generic_counter.internal.@0").inAll

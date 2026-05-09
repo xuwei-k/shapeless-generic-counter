@@ -3,6 +3,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 def sbt2 = "2.0.0-RC12"
 
 val commonSettings = Def.settings(
+  exportJars := false,
   publishTo := (if (isSnapshot.value) None else localStaging.value),
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / doc / scalacOptions ++= {
@@ -155,7 +156,6 @@ lazy val compilerPlugin = projectMatrix
   .jvmPlatform(scalaVersions = Seq(Scala212, Scala213))
   .settings(
     commonSettings,
-    exportJars := false,
     libraryDependencies += argonaut,
     assembly / assemblyShadeRules := Seq(
       ShadeRule.rename("argonaut.**" -> s"shapeless_generic_counter.internal.@0").inAll

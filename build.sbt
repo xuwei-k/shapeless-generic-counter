@@ -3,7 +3,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 def sbt2 = "2.0.0-RC12"
 
 val commonSettings = Def.settings(
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := (if (isSnapshot.value) None else localStaging.value),
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / packageSrc / mappings ++= (Compile / managedSources).value.map { f =>
     (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
@@ -71,7 +71,7 @@ releaseProcess := Seq[ReleaseStep](
   tagRelease,
   releaseStepCommandAndRemaining("set useSuperShell := false"),
   releaseStepCommandAndRemaining("publishSigned"),
-  releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+  releaseStepCommandAndRemaining("sonaRelease"),
   releaseStepCommandAndRemaining("set useSuperShell := true"),
   setNextVersion,
   commitNextVersion,

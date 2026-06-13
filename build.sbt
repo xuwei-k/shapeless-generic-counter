@@ -181,6 +181,6 @@ lazy val compilerPlugin = projectMatrix
   )
   .dependsOn(core)
 
-ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.6.27"
+ThisBuild / scalafixDependencies += "com.github.xuwei-k" %% "scalafix-rules" % "0.6.28"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := "4.14.2"

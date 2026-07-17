@@ -1,6 +1,6 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
-def sbt1 = "1.12.13"
+def sbt1 = "1.12.14"
 val sbt2 = {
   val p = new java.util.Properties
   p.load(new java.io.FileInputStream("project/build.properties"))

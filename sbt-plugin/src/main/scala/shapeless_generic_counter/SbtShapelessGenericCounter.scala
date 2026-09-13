@@ -9,6 +9,7 @@ import sjsonnew.JsonFormat
 object SbtShapelessGenericCounter extends AutoPlugin {
   object autoImport {
     val shapelessGenericCounterOutput = settingKey[File]("")
+    @transient
     val shapelessGenericCounterAggregate = taskKey[ResultValue]("")
     val shapelessGenericCounterAggregateConfigurations = settingKey[Seq[Configuration]]("")
   }

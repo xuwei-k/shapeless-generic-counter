@@ -1,8 +1,8 @@
 package example
 
-import io.circe.generic.auto._
-import io.circe.Encoder
 import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.generic.auto._
 
 case class A1(x1: Int, x2: String)
 

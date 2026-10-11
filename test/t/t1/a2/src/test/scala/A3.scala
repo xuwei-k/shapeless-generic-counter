@@ -1,8 +1,8 @@
 package example
 
+import shapeless.::
 import shapeless.Generic
 import shapeless.HNil
-import shapeless.::
 
 case class A2(x1: Int)
 

@@ -21,8 +21,7 @@ jobs:
     - uses: sbt/setup-sbt@v1
     - run: sbt -v
            --server
-           scalafmtCheckAll
-           scalafmtSbtCheck
+           scalafmtCheckRepo
            "scalafixAll --check"
            test
            publishLocal

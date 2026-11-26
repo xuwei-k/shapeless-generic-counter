@@ -1,11 +1,7 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 def sbt1 = "1.13.1"
-val sbt2 = {
-  val p = new java.util.Properties
-  p.load(new java.io.FileInputStream("project/build.properties"))
-  p.getProperty("sbt.version").trim
-}
+val sbt2 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion.sbtVersionFromProjectBuildProperties
 
 val commonSettings = Def.settings(
   exportJars := false,
